@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แจ้งเข้าทำงาน - ผู้แทนยา</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;font-size:16px;background:#eaf4fb;min-height:100vh}
+.app{min-height:100vh}
+
+/* NAV */
+.nav{background:#fff;border-bottom:2px solid #90c8e8;padding:0 1.5rem;display:flex;align-items:center;position:sticky;top:0;z-index:100;flex-wrap:wrap}
+.nav-logo{font-size:17px;font-weight:600;color:#0a5a8a;padding:14px 20px 14px 0;border-right:1.5px solid #90c8e8;margin-right:12px;display:flex;align-items:center;gap:8px}
+.nav-logo i{color:#1a8fc0}
+.nav-tab{padding:12px 18px;font-size:16px;cursor:pointer;border:1.5px solid #a8d8ee;border-bottom:none;border-radius:10px 10px 0 0;background:#ddf0fa;color:#1a6a90;display:flex;align-items:center;gap:7px;transition:all .15s;white-space:nowrap;font-family:'Sarabun',sans-serif;margin-right:6px;margin-top:6px}
+.nav-tab.active{background:#fff;color:#0a5a8a;border-color:#1a8fc0;font-weight:600;border-bottom:2px solid #fff;margin-bottom:-2px}
+.nav-tab:hover:not(.active){background:#b8e2f5;color:#0a3f60}
+
+/* LAYOUT */
+.page{display:none;padding:1.5rem;max-width:860px;margin:0 auto}.page.active{display:block}
+.card{background:#fff;border:1.5px solid #90c8e8;border-radius:14px;padding:1.4rem;margin-bottom:1rem;box-shadow:0 2px 8px rgba(26,143,192,.08)}
+.sec-title{font-size:17px;font-weight:600;color:#0a3f60;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.sec-title i{font-size:20px;color:#1a8fc0}
+.fg{display:flex;flex-direction:column;gap:7px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.full{grid-column:1/-1}
+label{font-size:15px;color:#1a4a6a;font-weight:500}
+input,select,textarea{font-family:'Sarabun',sans-serif;font-size:16px;padding:10px 14px;border:1.5px solid #7ab8d8;border-radius:9px;background:#fff;color:#1a2e3e;width:100%;outline:none;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:#1a8fc0;box-shadow:0 0 0 3px rgba(26,143,192,.15)}
+.btn{font-family:'Sarabun',sans-serif;padding:10px 20px;border-radius:9px;font-size:16px;cursor:pointer;border:1.5px solid #7ab8d8;display:inline-flex;align-items:center;gap:7px;transition:all .15s;background:#fff;color:#0a3f60}
+.btn:hover{background:#ddf0fa}
+.btn-primary{background:#1a8fc0;color:#fff;border-color:#1a8fc0}.btn-primary:hover{background:#0a5a8a}
+.btn-sm{padding:7px 14px;font-size:14px}
+.btn-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:1rem}
+.divider{border:none;border-top:1px solid #b8e2f5;margin:.75rem 0}
+.empty{text-align:center;padding:2rem;color:#4a8aaa;display:flex;flex-direction:column;align-items:center;gap:8px}
+.empty i{font-size:36px;opacity:.4}
+
+/* ALERT */
+.alert{padding:11px 15px;border-radius:9px;font-size:15px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.al-success{background:#e0f5e9;color:#1a6a3a}.al-error{background:#fdecea;color:#a32d2d}.al-info{background:#e6f1fb;color:#185fa5}
+
+/* STATUS BAR */
+.gs-bar{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #90c8e8;border-radius:10px;padding:10px 14px;margin-bottom:1rem;flex-wrap:wrap}
+.gs-st{font-size:13px;padding:4px 12px;border-radius:999px;white-space:nowrap}
+.gs-ok{background:#e0f5e9;color:#1a6a3a}.gs-err{background:#fdecea;color:#a32d2d}.gs-idle{background:#ddf0fa;color:#1a4a6a}
+
+/* VISIT CARDS */
+.visit-card{background:#f4f9fd;border:1.5px solid #b8e2f5;border-radius:11px;padding:12px 15px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.alert-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:999px;font-size:13px;font-weight:600}
+.ab-today{background:#fff0d8;color:#854f0b;border:1.5px solid #f0c070}
+.ab-tomorrow{background:#e0ecfb;color:#185fa5;border:1.5px solid #90b8e8}
+.ab-pending{background:#fdecea;color:#a32d2d;border:1.5px solid #f0b8b8}
+.ab-uncomp{background:#fff3e0;color:#854f0b;border:1.5px solid #f5c97a}
+
+/* HISTORY TABLE */
+.vtable{width:100%;border-collapse:collapse;font-size:15px}
+.vtable th{text-align:left;padding:10px 12px;background:#ddf0fa;color:#0a3f60;font-weight:600;border-bottom:1.5px solid #90c8e8;white-space:nowrap}
+.vtable td{padding:10px 12px;border-bottom:1px solid #c8e8f5;vertical-align:middle}
+.vtable tr:last-child td{border-bottom:none}
+.vtable tr:hover td{background:#f0f8fd}
+.vt-today{color:#c0392b;font-weight:600}
+.vt-advance{color:#1a2e3e}
+
+/* section label */
+.day-label{font-size:15px;font-weight:600;display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.day-label.today{color:#854f0b}
+.day-label.tomorrow{color:#185fa5}
+
+/* FBAR */
+.fbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.fbar input,.fbar select{width:auto;flex:1;min-width:120px;font-size:15px;padding:8px 12px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<nav class="nav">
+  <div class="nav-logo"><i class="ti ti-calendar-user"></i>แจ้งเข้าทำงาน</div>
+  <button class="nav-tab active" onclick="switchPage('alert')" id="tab-alert"><i class="ti ti-bell"></i>แจ้งเตือน</button>
+  <button class="nav-tab" onclick="switchPage('form')" id="tab-form"><i class="ti ti-calendar-plus"></i>แจ้งเข้าทำงาน</button>
+  <button class="nav-tab" onclick="switchPage('history')" id="tab-history"><i class="ti ti-calendar-stats"></i>ประวัติเข้าทำงาน</button>
+</nav>
+
+<!-- STATUS BAR -->
+<div style="max-width:860px;margin:0 auto;padding:.75rem 1.5rem 0">
+  <div class="gs-bar">
+    <i class="ti ti-table" style="font-size:16px;color:#1a8fc0;flex-shrink:0"></i>
+    <span style="font-size:13px;color:#4a7a9a;flex-shrink:0">Google Sheets:</span>
+    <span class="gs-st gs-idle" id="gsStatus" style="flex:1">กำลังเชื่อมต่อ...</span>
+    <button class="btn btn-sm" onclick="syncAll(true)" id="syncBtn"><i class="ti ti-refresh"></i>รีเฟรช</button>
+  </div>
+</div>
+
+<!-- ══ PAGE: ALERT ══ -->
+<div class="page active" id="page-alert">
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-bell-ringing"></i>แจ้งเตือนวันนี้และพรุ่งนี้</div>
+
+    <div style="margin-bottom:1.2rem">
+      <div class="day-label today"><i class="ti ti-calendar-event" style="font-size:17px"></i>วันนี้ <span id="lbl-today" style="font-weight:400;color:#aaa;font-size:13px"></span></div>
+      <div id="today-list"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <div class="day-label tomorrow"><i class="ti ti-calendar-week" style="font-size:17px"></i>พรุ่งนี้ <span id="lbl-tomorrow" style="font-weight:400;color:#aaa;font-size:13px"></span></div>
+      <div id="tomorrow-list"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-package-export"></i>ยาหมดอายุรอรับคืน
+      <span style="font-size:13px;font-weight:400;color:#888">(เฉพาะบริษัทที่แจ้งเข้าวันนี้)</span>
+    </div>
+    <div id="pending-list"></div>
+  </div>
+
+  <div class="card">
+    <div class="sec-title" style="color:#854f0b"><i class="ti ti-currency-baht" style="color:#ba7517"></i>รายการรอชดเชย
+      <span style="font-size:13px;font-weight:400;color:#888">(เฉพาะบริษัทที่แจ้งเข้าวันนี้)</span>
+    </div>
+    <div id="uncomp-list"></div>
+  </div>
+</div>
+
+<!-- ══ PAGE: FORM ══ -->
+<div class="page" id="page-form">
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-calendar-plus"></i>แจ้งเข้าทำงาน</div>
+    <div id="alert-form"></div>
+    <div class="grid2">
+      <div class="fg full">
+        <label>บริษัท *</label>
+        <select id="visitCompany"><option value="">— เลือกบริษัท —</option></select>
+      </div>
+      <div class="fg">
+        <label>วันที่จะเข้าทำงาน *</label>
+        <input type="date" id="visitDate">
+      </div>
+      <div class="fg">
+        <label>หมายเหตุ</label>
+        <input type="text" id="visitNote" placeholder="เช่น ส่งสินค้าใหม่, รับเงิน...">
+      </div>
+    </div>
+    <div class="btn-acts">
+      <button class="btn btn-primary" onclick="submitVisit()"><i class="ti ti-calendar-check"></i>บันทึกการแจ้งเข้าทำงาน</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE: HISTORY ══ -->
+<div class="page" id="page-history">
+  <div class="card" style="padding-bottom:.75rem">
+    <div class="sec-title" style="margin-bottom:.75rem"><i class="ti ti-calendar-stats"></i>ประวัติการเข้าทำงาน</div>
+    <div class="fbar">
+      <input type="text" id="vfCompany" placeholder="🔍 ค้นหาบริษัท..." oninput="renderHistory()">
+      <button class="btn btn-sm" onclick="document.getElementById('vfCompany').value='';renderHistory()"><i class="ti ti-x"></i>ล้าง</button>
+    </div>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="vtable">
+      <thead><tr>
+        <th>บริษัท</th>
+        <th>วันที่จะเข้าทำงาน</th>
+        <th>วันที่แจ้ง</th>
+        <th>หมายเหตุ</th>
+      </tr></thead>
+      <tbody id="history-body">
+        <tr><td colspan="4"><div class="empty"><i class="ti ti-calendar-off"></i>ยังไม่มีประวัติ</div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- .app -->
+
+<script>
+const GAS='https://script.google.com/macros/s/AKfycbwUG5eEtouGB3dJZb0NmkyNxD02LbwZSMGSQB8HDzD7emd1PFVh37wgG7wmNfmMagVM/exec';
+const VISITS_H=['วันที่แจ้ง','บริษัท','วันที่จะเข้า','หมายเหตุ','visitId'];
+
+const COMPANIES=[{name:'กรุงเทพฯฟาร์มาซี'},{name:'กวงเตี่ยงดิสเปนซารี่'},{name:'ขาวละออเภสัช'},{name:'ควอลิเมด'},{name:'คอนติเนนเติล-ฟาร์ม'},{name:'คั่นกี่ (น้ำเต้าทอง)'},{name:'ง่วนเฮงจั่น'},{name:'จตุรพรโอสถ'},{name:'จรูญเภสัช'},{name:'จอมทอง'},{name:'จีนฮั่วเฮง'},{name:'ชาญกิจเทรดดิ้ง'},{name:'ชีโน แปซิฟิก'},{name:'ชุมชนเภสัชกรรม'},{name:'ชูมิตร'},{name:'ซินต้าเทรดดิ้ง'},{name:'ซิลลิค ฟาร์มา'},{name:'ซิสส์ เฮสท์แคร์'},{name:'ซีเครท เฮลธ์'},{name:'ซี่น อัน ตึ๊ง'},{name:'ดาด้า'},{name:'ดีซีเอช ออริก้า'},{name:'ดีเอ็น เซ็นเตอร์ (DNcenter)'},{name:'ตั้งเต็มจิตร์'},{name:'ถาวราเฮลท์'},{name:'ถ้วยทองโอสถ'},{name:'ทรูไลน์ เมด'},{name:'ที.ซี.ฟาร์มาซูติคอล'},{name:'ที.ที เซคชั่น'},{name:'ที.พี.ดรัก แลบบอราทอรี่ส์'},{name:'ที.แมน ฟาร์มา'},{name:'ที.โอ.เคมีคอลส์ (1979)'},{name:'ทีซี กรีนไพน์'},{name:'ทูบี มาร์เก็ตติ้ง'},{name:'ธงทองโอสถ'},{name:'ธนบุรี'},{name:'ธีระพานิช'},{name:'นครพัฒนา'},{name:'นพรัตน์'},{name:'นิวคอนเซพท์ โปรดัคท์'},{name:'นิวเจริญ ฟาร์มาซูติคอล'},{name:'นิวไลฟ์ ฟาร์มา'},{name:'นีโอก้า'},{name:'บอส ฟาร์มาแคร์ (ยาไทย)'},{name:'บัณโก'},{name:'บางกอกแล็ป แอนด์ คอสเมติค'},{name:'บี เมด ฟาร์มาซูติคอล'},{name:'บี.เอ็ม'},{name:'บี.เอ็ล.ฮั้ว'},{name:'บี.เอ็ล.เอช. เทรดดิ้ง'},{name:'บุคคโล'},{name:'บุญส่งโอสถ'},{name:'บูรพาโอสถ'},{name:'ประสงค์เภสัช'},{name:'ปัจจุบันโอสถ'},{name:'ปิยะพนธ์ (มาราธอน)'},{name:'ผงพิเศษตราร่มชูชีพ'},{name:'พยาบาล'},{name:'พรอส ฟาร์มา'},{name:'พรีเวนทีฟ'},{name:'พัฒนาการเภสัช'},{name:'พาร์ตาแลบ (2517)'},{name:'พิคโก้ฟาร์มา'},{name:'พี.ยูนีไทย'},{name:'พีดีแอล'},{name:'พีพีเอ็ม (PPM)'},{name:'พีเอ็มแอล (ฟาร์มาแลนด์)'},{name:'ฟาร์มาสแควร์'},{name:'ฟาร์ม่าไลน์'},{name:'ฟีฮาแลบ'},{name:'มัณฑนา มาร์เก็ตติ้ง'},{name:'มาซ่าแลป'},{name:'ยันฮี'},{name:'ยาตราพระราม'},{name:'ยูนีซัน'},{name:'ยูเนี่ยนเมดิคอล'},{name:'ยูเมด้า'},{name:'ลองเมด'},{name:'ลิงถือลูกท้อ'},{name:'ลิตเติ้ล ฮาร์ท'},{name:'ลี้้บ้วนซัว ดิสเปนซารี่(ห้างเก่า)'},{name:'วายไอเอ แมเนชเมนท์ (YIA-คุณเปรมา)'},{name:'วิจารณ์เภสัช'},{name:'วิทยาศรม สาขา 5'},{name:'วิทูรเภสัช'},{name:'วิริยะ เมดิคอล'},{name:'วิริยะพานิช'},{name:'วิเศษนิยม'},{name:'ศรีจันทร์โอสถ'},{name:'ส.สุพรรณ'},{name:'ส.เจริญ เภสัช'},{name:'สมศักดิ์เภสัช (โคเทียมเกวียน)'},{name:'สมุนไพรคงคา'},{name:'สมุนไพรตราหมอจุฬา'},{name:'สมุนไพรภูหลวง'},{name:'สยาม ฟาร์มาซูติคอล'},{name:'สยามไทธัส'},{name:'สหแพทย์เภสัช'},{name:'สัมมิท คอร์เปเรชั่น'},{name:'สามัคคีเภสัช'},{name:'หงส์ไทย'},{name:'หมอมี'},{name:'หมอยาไทย'},{name:'หมิ่นเพียว'},{name:'หาญไทย'},{name:'ห้าตะขาบ'},{name:'ห้าม้าโอสถ'},{name:'ห้าเจดีย์'},{name:'องค์การเภสัชกรรม'},{name:'อาร์เอ็กซ์ แมนูแฟคเจอริ่ง'},{name:'อุดมนิจ'},{name:'อุยเฮง'},{name:'อ้วยอันโอสถ'},{name:'ฮีโร่มัยซิน ฟาร์ม่า'},{name:'ฮุยแลนด์'},{name:'เกร็กคู'},{name:'เกร็ทเตอร์ฟาร์ม่า'},{name:'เกียรติทวี (เช็ง เช็ง อิ้ว)'},{name:'เค.ที.วี'},{name:'เจ เอส วิชั่น'},{name:'เจริญสุข'},{name:'เจ็ดดาว'},{name:'เซ็นทรัลโพลี่'},{name:'เซ่งหลีโอสถ'},{name:'เทพประทานพร'},{name:'เทวกรรมโอสถ'},{name:'เบอร์ลิน ฟาร์มาซูติคอล'},{name:'เบอร์แทรม'},{name:'เพรซิเดนท์ อินเตอร์ ฟาร์มา'},{name:'เพ็ญภาค'},{name:'เฟรนชิป'},{name:'เภสัชกรรมศรีประสิทธิ์'},{name:'เมดซินโนว่า'},{name:'เมดเมเกอร์'},{name:'เมดไลน์'},{name:'เยนเนอร์ราลดรั๊กเฮ้าส์'},{name:'เยาวราช'},{name:'เยเนอรัล ออสปิตัล โปรดักส์'},{name:'เลิศสิงห์เภสัชกรรม'},{name:'เวชพงศ์โอสถ'},{name:'เวชภัณฑ์ ป๊อก กาโน่'},{name:'เสือ 11 ตัว'},{name:'เสือมังกร'},{name:'เหลืองเวชภัณฑ์'},{name:'เอ.เอ็น.บี ลาบอราตอรี่'},{name:'เอกไพศาล'},{name:'เอช.ไอ.พี (HIP)'},{name:'เอชจีเค ฟาร์มาซูติคอล'},{name:'เอชเค เมดิซีน'},{name:'เอซีอี โกลบอล (ACE Global)'},{name:'เอฟ.ซี.พี (FCP)'},{name:'เอส.เอส.พี (SSP)'},{name:'เอาร์อาร์'},{name:'เอเชี่ยน ฟาร์มาซูติคอล'},{name:'เอเชี่ยน ยูเนี่ยน (ASIAN UNION)'},{name:'เอเซียโอสถ (ไดน่าฟู้ด)'},{name:'เอเอ็นพีเอส (ANPS)'},{name:'เอเอ็มเค เมดิคอล'},{name:'เอ็งจีนฮั่วเฮง'},{name:'เฮลท์ อิมแพค'},{name:'แก้วมังกรเภสัช'},{name:'แคนตั้น เมดิแคร์'},{name:'แคสป้า ฟาร์มาซูติคอล (ประเทศไทย)'},{name:'แปซิฟิค เฮลธ์แคร์ (ไทยแลนด์)'},{name:'แมคโครฟาร์'},{name:'แมส มาร์เก็ตติ้ง'},{name:'แสงชัยเภสัช'},{name:'แสงฟ้า'},{name:'แสงรัศมี (SRM pharma)'},{name:'แสงไทย'},{name:'แหลมทอง การแพทย์'},{name:'แอตว๊านซ์ (ซองซิป)'},{name:'แอล.บี.เอส แลบบอเรตอรี่'},{name:'แอโรแคร์ (อินแพค)'},{name:'โกลด์ครอส (กากบาททอง)'},{name:'โชคชัย'},{name:'โปลิฟาร์ม'},{name:'โป๊ยเซียน'},{name:'โมเดิร์น ฟาร์ม่า'},{name:'โรงงานเภสัชกรรมแอตแลนติค'},{name:'โรต้าลาบอเร็ทตอรี่ส์'},{name:'โรยัล ดรักส์'},{name:'โอสถยังตัง'},{name:'โอเร็กซ์ เทรดดิ้ง'},{name:'ใบโพธิ์'},{name:'ไทยนครพัฒนา - แผนก 1 - ทิฟฟี่'},{name:'ไทยนครพัฒนา - แผนก 2 - แอนตาซิล'},{name:'ไทยนครพัฒนา - แผนก 3 - เบนด้า'},{name:'ไทยนครพัฒนา - แผนก 4 - นีโอติก้า'},{name:'ไทยนครพัฒนา - แผนก 5 - พรีมโนบุ'},{name:'ไทยเวชการ'},{name:'ไทยแลนด์ ฟาร์มาซี (นาสิก)'},{name:'ไบร์วู้ดฟาร์มาซูติคอล'},{name:'ไบโอจินีเทค'},{name:'ไบโอฟาร์ม (Biopharm)'},{name:'DKLL - Exeltis'},{name:'DKLL - Ranbaxy'},{name:'DKLL - อังกฤษตรางู'},{name:'DKSH - Alinamin'},{name:'DKSH - Alkon'},{name:'DKSH - Bausch & lomb (Renu)'},{name:'DKSH - Bayer (CDR)'},{name:'DKSH - Bayer (Yasmin)'},{name:'DKSH - Convatec'},{name:'DKSH - Hirudoid'},{name:'DKSH - Johnson&Johnson (tylenol)'},{name:'DKSH - LEO (Fucidene)'},{name:'DKSH - LEO (เสือดาว)'},{name:'DKSH - Loreal'},{name:'DKSH - Nestle'},{name:'DKSH - Omron'},{name:'DKSH - Opella (ไบโซลวอน)'},{name:'DKSH - Roche (Accuchek)'},{name:'DKSH - Sanofi (Depakine)'},{name:'DKSH - SM (Fluimucil)'},{name:'DKSH - SMART (Cavilon)'},{name:'DKSH - Smecta'},{name:'DKSH - Smith&nephew'},{name:'DKSH - Stada (Kamistad)'},{name:'DKSH - Taisho (Counterpain)'},{name:'DKSH - TRB'},{name:'DKSH - Vicks'},{name:'DKSH - ตราเสือ'},{name:'DKSH - ศิริบัญชา'},{name:'DKSH - โอสถสภา'},{name:'DKSH -โอสถอินเตอร์'},{name:'ZPL - Abbott (Ensure)'},{name:'ZPL - Abbott (Serc)'},{name:'ZPL - GED (Decolgen)'},{name:'ZPL - GSK'},{name:'ZPL - Haleon'},{name:'ZPL - Inova (norgesic)'},{name:'ZPL - M1 (thai-otsuka)'},{name:'ZPL - M2 (นกแก้ว)'},{name:'ZPL - M3 (Regelle)'},{name:'ZPL - M4 (Zithromax)'},{name:'ZPL - Mega'},{name:'ZPL - Menarini (Dermatix)'},{name:'ZPL - Menarini (Kamillosan)'},{name:'ZPL - Organon (Marvelon)'},{name:'ZPL - Perskindol'},{name:'ZPL - Sandoz'},{name:'ZPL - Viatris (Pfizer)'},{name:'ZPL - แจ็กเจี่ย'}];
+
+/** แปลงวันที่ที่มาจาก GAS ให้เป็น YYYY-MM-DD เสมอ
+ *  รองรับทั้ง "2026-05-15T17:00:00.000Z" (UTC) และ "2026-05-16" (string) */
+function parseSheetDate(raw) {
+  if (!raw) return '';
+  const s = String(raw);
+  // ISO UTC string → บวก 7 ชั่วโมง (Asia/Bangkok)
+  if (s.includes('T') && s.endsWith('Z')) {
+    const d = new Date(s);
+    // บวก offset +7h
+    d.setTime(d.getTime() + 7 * 60 * 60 * 1000);
+    return d.toISOString().slice(0, 10);
+  }
+  // YYYY-MM-DD string ปกติ
+  return s.slice(0, 10);
+}
+let visits=[];
+let drugs=[];
+let returns=[];
+
+/* ── Helpers ── */
+function localDateStr(offset=0){
+  const d=new Date();d.setDate(d.getDate()+offset);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function todayStr(){return localDateStr(0);}
+function tomorrowStr(){return localDateStr(1);}
+function genId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function fmtD(d){
+  if(!d||d==='-')return'-';
+  try{
+    // parse YYYY-MM-DD as local time (ไม่ใช่ UTC) เพื่อป้องกันวันถอยหลัง
+    const s=String(d).slice(0,10);
+    const [y,m,day]=s.split('-').map(Number);
+    if(!y||!m||!day)return d;
+    return new Date(y,m-1,day).toLocaleDateString('th-TH',{day:'2-digit',month:'short',year:'numeric'});
+  }catch(e){return d;}
+}
+function setGs(t,m){const el=document.getElementById('gsStatus');el.className='gs-st gs-'+t;el.textContent=m;}
+function showAlert(id,msg,type){
+  const el=document.getElementById(id);
+  el.innerHTML=`<div class="alert al-${type}"><i class="ti ti-${type==='success'?'check':type==='info'?'info-circle':'alert-circle'}"></i>${msg}</div>`;
+  if(type!=='info')setTimeout(()=>el.innerHTML='',4000);
+}
+
+/* ── Navigation ── */
+function switchPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.getElementById('tab-'+p).classList.add('active');
+  if(p==='alert') renderAlert();
+  if(p==='history') renderHistory();
+  if(p==='form') document.getElementById('visitDate').value=todayStr();
+}
+
+/* ── Init company dropdown ── */
+function initCompany(){
+  const sel=document.getElementById('visitCompany');
+  COMPANIES.forEach(c=>{
+    const o=document.createElement('option');
+    o.value=c.name;o.textContent=c.name;
+    sel.appendChild(o);
+  });
+}
+
+/* ── Post to Sheet ── */
+async function postSheet(sheet,headers,row,action='append'){
+  try{
+    await fetch(GAS,{method:'POST',body:JSON.stringify({action,sheet,headers,row})});
+    setGs('ok','อัปเดต Sheets · '+new Date().toLocaleTimeString('th-TH'));
+  }catch(e){setGs('err','Sheets: อัปเดตไม่สำเร็จ');}
+}
+
+/* ── Submit visit ── */
+function submitVisit(){
+  const company=document.getElementById('visitCompany').value.trim();
+  const date=document.getElementById('visitDate').value;
+  const note=document.getElementById('visitNote').value.trim();
+  if(!company||!date){showAlert('alert-form','กรุณาเลือกบริษัทและวันที่','error');return;}
+  const visitId=genId();
+  const notifiedAt=todayStr();
+  visits.push({visitId,company,date,note,notifiedAt});
+  postSheet('แจ้งเข้าทำงาน',VISITS_H,[notifiedAt,company,date,note,visitId]);
+  showAlert('alert-form',`บันทึกแจ้งเข้าทำงาน ${company} วันที่ ${fmtD(date)} สำเร็จ`,'success');
+  document.getElementById('visitCompany').value='';
+  document.getElementById('visitNote').value='';
+  renderAlert();renderHistory();
+}
+
+/* ── Sync all data from Sheets ── */
+async function syncAll(manual=false){
+  const btn=document.getElementById('syncBtn');
+  btn.disabled=true;btn.innerHTML='<i class="ti ti-loader"></i>กำลังดึง...';
+  setGs('idle','กำลังเชื่อมต่อ...');
+
+  // ── ดึงแผ่น visits ก่อน แสดงผลทันที ──
+  try{
+    const url=GAS+'?sheet='+encodeURIComponent('แจ้งเข้าทำงาน');
+    const res=await fetch(url);
+    const rV=await res.json();
+    if(Array.isArray(rV)&&rV.length>1){
+      visits=[];
+      rV.slice(1).forEach(row=>{
+        if(!row[1])return;
+        visits.push({
+          visitId:String(row[4]||genId()),
+          notifiedAt:parseSheetDate(row[0]),
+          company:String(row[1]||''),
+          date:parseSheetDate(row[2]),
+          note:String(row[3]||'')
+        });
+      });
+      setGs('ok','แจ้งเข้าทำงาน: '+visits.length+' รายการ');
+      renderAlert();renderHistory();
+    } else {
+      setGs('err','แผ่น "แจ้งเข้าทำงาน" ไม่พบข้อมูล หรือ GAS ยังไม่รองรับแผ่นนี้ (response: '+JSON.stringify(rV).slice(0,60)+')');
+    }
+  }catch(e){
+    setGs('err','ดึงแผ่น "แจ้งเข้าทำงาน" ไม่ได้: '+e.message);
+  }
+
+  // ── ดึง drugs + returns สำหรับแจ้งเตือนยารอคืน/ชดเชย ──
+  try{
+    const [rD,rR]=await Promise.all([
+      fetch(GAS+'?sheet=drugs').then(x=>x.json()).catch(()=>[]),
+      fetch(GAS+'?sheet=returns').then(x=>x.json()).catch(()=>[])
+    ]);
+    if(Array.isArray(rD)&&rD.length>1){
+      drugs=[];
+      rD.slice(1).forEach(row=>{
+        if(!row[1])return;
+        drugs.push({name:String(row[1]||''),company:String(row[2]||''),status:String(row[11]||'pending'),id:String(row[12]||'')});
+      });
+    }
+    if(Array.isArray(rR)&&rR.length>1){
+      const recMap={};
+      rR.slice(1).forEach(row=>{
+        const retId=String(row[0]||'');if(!retId||!row[6])return;
+        const isCan=String(row[21]||'').toLowerCase()==='cancelled';
+        if(!recMap[retId])recMap[retId]={id:retId,company:String(row[2]||''),cancelled:isCan,drugs:[]};
+        const compStatus=String(row[14]||'ยังไม่ชดเชย');
+        const compConfirmed=String(row[20]||'')==='ยืนยันแล้ว';
+        recMap[retId].drugs.push({name:String(row[6]||''),compStatus,compConfirmed});
+      });
+      returns=Object.values(recMap);
+    }
+    setGs('ok',(manual?'ดึงข้อมูลสำเร็จ':'เชื่อมต่อสำเร็จ')+' · แจ้งเข้า '+visits.length+' รายการ · '+new Date().toLocaleTimeString('th-TH'));
+  }catch(e){
+    setGs('err','ดึง drugs/returns ไม่ได้: '+e.message);
+  }
+
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-refresh"></i>รีเฟรช';
+  renderAlert();renderHistory();
+}
+
+/* ── Render Alert Page ── */
+function renderAlert(){
+  const today=todayStr(), tom=tomorrowStr();
+  document.getElementById('lbl-today').textContent='('+fmtD(today)+')';
+  document.getElementById('lbl-tomorrow').textContent='('+fmtD(tom)+')';
+
+  const todayV=visits.filter(v=>v.date===today);
+  const tomV=visits.filter(v=>v.date===tom);
+  const todayCos=new Set(todayV.map(v=>v.company));
+
+  const visitCard=(v,cls)=>`
+    <div class="visit-card">
+      <div style="display:flex;align-items:center;gap:10px;flex:1;flex-wrap:wrap">
+        <span class="alert-badge ${cls}"><i class="ti ti-building-store"></i>${v.company}</span>
+        ${v.note?`<span style="font-size:13px;color:#2a6a8a"><i class="ti ti-notes" style="vertical-align:-2px"></i> ${v.note}</span>`:''}
+      </div>
+      <span style="font-size:12px;color:#aaa;white-space:nowrap">แจ้ง ${fmtD(v.notifiedAt)}</span>
+    </div>`;
+
+  const emptyBox=(icon,msg)=>`<div class="empty"><i class="ti ti-${icon}"></i><span style="font-size:14px">${msg}</span></div>`;
+
+  document.getElementById('today-list').innerHTML=
+    todayV.length ? todayV.map(v=>visitCard(v,'ab-today')).join('') : emptyBox('check','ไม่มีผู้แทนแจ้งเข้าวันนี้');
+
+  document.getElementById('tomorrow-list').innerHTML=
+    tomV.length ? tomV.map(v=>visitCard(v,'ab-tomorrow')).join('') : emptyBox('check','ไม่มีผู้แทนแจ้งเข้าพรุ่งนี้');
+
+  /* ยารอรับคืน — เฉพาะบริษัทที่เข้าวันนี้ */
+  const pendingCos=[...new Set(drugs.filter(d=>d.status==='pending').map(d=>d.company))];
+  const pendingToday=pendingCos.filter(co=>todayCos.has(co));
+  document.getElementById('pending-list').innerHTML=pendingToday.length
+    ? pendingToday.map(co=>`<div class="visit-card">
+        <span class="alert-badge ab-pending"><i class="ti ti-package-export"></i>${co}</span>
+        <span style="font-size:13px;color:#a32d2d;font-weight:500">มียาหมดอายุรอรับคืน</span>
+      </div>`).join('')
+    : emptyBox('mood-happy','ไม่มีบริษัทที่จะเข้าวันนี้ที่มียารอรับคืน');
+
+  /* รายการรอชดเชย — เฉพาะบริษัทที่เข้าวันนี้ */
+  const uncompMap={};
+  returns.filter(r=>!r.cancelled&&todayCos.has(r.company)).forEach(r=>{
+    r.drugs.forEach(d=>{
+      if(!d.compConfirmed&&d.compStatus!=='ชดเชยทั้งหมด'){
+        uncompMap[r.company]=(uncompMap[r.company]||0)+1;
+      }
+    });
+  });
+  const uncompEntries=Object.entries(uncompMap);
+  document.getElementById('uncomp-list').innerHTML=uncompEntries.length
+    ? uncompEntries.map(([co,cnt])=>`<div class="visit-card">
+        <span class="alert-badge ab-uncomp"><i class="ti ti-building-store"></i>${co}</span>
+        <span style="font-size:13px;color:#854f0b;font-weight:500"><i class="ti ti-currency-baht" style="vertical-align:-2px"></i> มีรายการรอชดเชย ${cnt} รายการ</span>
+      </div>`).join('')
+    : emptyBox('circle-check','ไม่มีรายการรอชดเชยสำหรับบริษัทที่จะเข้าวันนี้');
+}
+
+/* ── Render History ── */
+function renderHistory(){
+  const fC=(document.getElementById('vfCompany').value||'').toLowerCase();
+  const today=todayStr();
+  let rows=[...visits];
+  if(fC)rows=rows.filter(v=>v.company.toLowerCase().includes(fC));
+  rows.sort((a,b)=>a.date.localeCompare(b.date));
+  const tbody=document.getElementById('history-body');
+  if(!rows.length){
+    tbody.innerHTML='<tr><td colspan="4"><div class="empty"><i class="ti ti-calendar-off"></i>ไม่พบข้อมูล</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML=rows.map(v=>{
+    const isToday=v.date===today;
+    const cls=isToday?'vt-today':'vt-advance';
+    const noteColor=isToday?'#c0392b':'#2a6a8a';
+    return`<tr>
+      <td class="${cls}">${v.company}</td>
+      <td class="${cls}">${fmtD(v.date)}</td>
+      <td class="${cls}">${fmtD(v.notifiedAt)}</td>
+      <td style="color:${noteColor};font-size:14px">${v.note||'-'}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── Boot ── */
+initCompany();
+document.getElementById('visitDate').value=todayStr();
+syncAll(false);
+</script>
+</body>
+</html>
