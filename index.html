@@ -427,12 +427,10 @@ function renderAlert(){
     : emptyBox('circle-check','ไม่มีสินค้ารอรถมารับสำหรับบริษัทที่จะเข้าวันนี้');
 }
 
-/* ── Open index.html with deep link ── */
+/* ── Open main system pages ── */
 function openLink(page, company) {
-  // ชื่อไฟล์ HTML หลัก — ถ้าอยู่คนละ folder ให้แก้ path ตรงนี้
-  const base = 'index.html';
-  const url  = base + '?page=' + page + '&company=' + company;
-  window.open(url, '_blank');
+  const base = 'https://srisuphan.github.io/Expire-Drug-ios/';
+  window.open(base, '_blank');
 }
 
 /* ── Render History ── */
