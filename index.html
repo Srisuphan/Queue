@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>แจ้งเข้าทำงาน - ผู้แทนยา</title>
+<title>Queue</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet">
 <style>
@@ -72,7 +72,10 @@ input:focus,select:focus,textarea:focus{border-color:#1a8fc0;box-shadow:0 0 0 3p
 .day-label.tomorrow{color:#185fa5}
 
 /* FBAR */
-.fbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn-checkin{background:#f0faf5;border:1.5px solid #90d4a8;color:#1a6a3a;border-radius:8px;padding:5px 12px;cursor:pointer;font-size:14px;font-family:'Sarabun',sans-serif;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
+.btn-checkin:hover{background:#c8ead8}
+.btn-checkin.checked{background:#1D9E75;color:#fff;border-color:#1D9E75}
+.btn-checkin.checked:hover{background:#0F6E56}
 .fbar input,.fbar select{width:auto;flex:1;min-width:120px;font-size:15px;padding:8px 12px}
 </style>
 </head>
@@ -80,7 +83,7 @@ input:focus,select:focus,textarea:focus{border-color:#1a8fc0;box-shadow:0 0 0 3p
 <div class="app">
 
 <nav class="nav">
-  <div class="nav-logo"><i class="ti ti-calendar-user"></i>แจ้งเข้าทำงาน</div>
+  <div class="nav-logo"><i class="ti ti-calendar-user"></i>Queue</div>
   <button class="nav-tab active" onclick="switchPage('alert')" id="tab-alert"><i class="ti ti-bell"></i>แจ้งเตือน</button>
   <button class="nav-tab" onclick="switchPage('form')" id="tab-form"><i class="ti ti-calendar-plus"></i>แจ้งเข้าทำงาน</button>
   <button class="nav-tab" onclick="switchPage('history')" id="tab-history"><i class="ti ti-calendar-stats"></i>ประวัติเข้าทำงาน</button>
@@ -165,9 +168,24 @@ input:focus,select:focus,textarea:focus{border-color:#1a8fc0;box-shadow:0 0 0 3p
 <div class="page" id="page-history">
   <div class="card" style="padding-bottom:.75rem">
     <div class="sec-title" style="margin-bottom:.75rem"><i class="ti ti-calendar-stats"></i>ประวัติการเข้าทำงาน</div>
-    <div class="fbar">
-      <input type="text" id="vfCompany" placeholder="🔍 ค้นหาบริษัท..." oninput="renderHistory()">
-      <button class="btn btn-sm" onclick="document.getElementById('vfCompany').value='';renderHistory()"><i class="ti ti-x"></i>ล้าง</button>
+    <div class="fbar" style="flex-wrap:wrap;gap:8px">
+      <input type="text" id="vfCompany" placeholder="🔍 ค้นหาบริษัท..." oninput="renderHistory()" style="min-width:160px">
+      <select id="vfYear" onchange="renderHistory()" style="min-width:90px"></select>
+      <select id="vfMonth" onchange="renderHistory()" style="min-width:110px">
+        <option value="">— ทุกเดือน —</option>
+        <option value="01">มกราคม</option><option value="02">กุมภาพันธ์</option>
+        <option value="03">มีนาคม</option><option value="04">เมษายน</option>
+        <option value="05">พฤษภาคม</option><option value="06">มิถุนายน</option>
+        <option value="07">กรกฎาคม</option><option value="08">สิงหาคม</option>
+        <option value="09">กันยายน</option><option value="10">ตุลาคม</option>
+        <option value="11">พฤศจิกายน</option><option value="12">ธันวาคม</option>
+      </select>
+      <select id="vfCheckin" onchange="renderHistory()" style="min-width:130px">
+        <option value="">— สถานะทั้งหมด —</option>
+        <option value="checked">✅ เข้าทำงานแล้ว</option>
+        <option value="unchecked">⏳ ยังไม่เข้า</option>
+      </select>
+      <button class="btn btn-sm" onclick="clearHistoryFilters()"><i class="ti ti-x"></i>ล้าง</button>
     </div>
   </div>
   <div style="overflow-x:auto">
@@ -177,9 +195,11 @@ input:focus,select:focus,textarea:focus{border-color:#1a8fc0;box-shadow:0 0 0 3p
         <th>วันที่จะเข้าทำงาน</th>
         <th>วันที่แจ้ง</th>
         <th>หมายเหตุ</th>
+        <th style="text-align:center">เข้าทำงาน</th>
+        <th style="text-align:center">ลบ</th>
       </tr></thead>
       <tbody id="history-body">
-        <tr><td colspan="4"><div class="empty"><i class="ti ti-calendar-off"></i>ยังไม่มีประวัติ</div></td></tr>
+        <tr><td colspan="6"><div class="empty"><i class="ti ti-calendar-off"></i>ยังไม่มีประวัติ</div></td></tr>
       </tbody>
     </table>
   </div>
@@ -244,7 +264,7 @@ function switchPage(p){
   document.getElementById('page-'+p).classList.add('active');
   document.getElementById('tab-'+p).classList.add('active');
   if(p==='alert') renderAlert();
-  if(p==='history') renderHistory();
+  if(p==='history'){initYearFilter();renderHistory();}
   if(p==='form') document.getElementById('visitDate').value=todayStr();
 }
 
@@ -302,7 +322,8 @@ async function syncAll(manual=false){
           notifiedAt:parseSheetDate(row[0]),
           company:String(row[1]||''),
           date:parseSheetDate(row[2]),
-          note:String(row[3]||'')
+          note:String(row[3]||''),
+          checkedIn:!!localStorage.getItem('checkin_'+String(row[4]||''))
         });
       });
       setGs('ok','แจ้งเข้าทำงาน: '+visits.length+' รายการ');
@@ -349,6 +370,7 @@ async function syncAll(manual=false){
   }
 
   btn.disabled=false;btn.innerHTML='<i class="ti ti-refresh"></i>รีเฟรช';
+  initYearFilter();
   renderAlert();renderHistory();
 }
 
@@ -429,36 +451,81 @@ function renderAlert(){
 
 /* ── Open main system pages ── */
 function openLink(page, company) {
-  const base = 'https://srisuphan.github.io/Expire-Drug-ios/';
-  window.open(base, '_blank');
+  window.open('https://srisuphan.github.io/Expire-Drug/', '_blank');
 }
 
 /* ── Render History ── */
+function initYearFilter(){
+  const sel=document.getElementById('vfYear');
+  const years=[...new Set(visits.map(v=>v.date.slice(0,4)).filter(Boolean))].sort().reverse();
+  const curYear=new Date().getFullYear().toString();
+  sel.innerHTML='<option value="">— ทุกปี —</option>'+years.map(y=>`<option value="${y}" ${y===curYear?'selected':''}>${Number(y)+543}</option>`).join('');
+}
+
+function clearHistoryFilters(){
+  document.getElementById('vfCompany').value='';
+  document.getElementById('vfYear').value=new Date().getFullYear().toString();
+  document.getElementById('vfMonth').value='';
+  document.getElementById('vfCheckin').value='';
+  renderHistory();
+}
+
 function renderHistory(){
   const fC=(document.getElementById('vfCompany').value||'').toLowerCase();
+  const fY=document.getElementById('vfYear').value||'';
+  const fM=document.getElementById('vfMonth').value||'';
+  const fCk=document.getElementById('vfCheckin').value||'';
   const today=todayStr();
   let rows=[...visits];
   if(fC)rows=rows.filter(v=>v.company.toLowerCase().includes(fC));
+  if(fY)rows=rows.filter(v=>v.date.slice(0,4)===fY);
+  if(fM)rows=rows.filter(v=>v.date.slice(5,7)===fM);
+  if(fCk==='checked')rows=rows.filter(v=>v.checkedIn);
+  if(fCk==='unchecked')rows=rows.filter(v=>!v.checkedIn);
   rows.sort((a,b)=>a.date.localeCompare(b.date));
   const tbody=document.getElementById('history-body');
   if(!rows.length){
-    tbody.innerHTML='<tr><td colspan="4"><div class="empty"><i class="ti ti-calendar-off"></i>ไม่พบข้อมูล</div></td></tr>';
+    tbody.innerHTML='<tr><td colspan="6"><div class="empty"><i class="ti ti-calendar-off"></i>ไม่พบข้อมูล</div></td></tr>';
     return;
   }
   tbody.innerHTML=rows.map(v=>{
     const isToday=v.date===today;
     const cls=isToday?'vt-today':'vt-advance';
     const noteColor=isToday?'#c0392b':'#2a6a8a';
+    const checkedBtn=v.checkedIn
+      ?`<button class="btn-checkin checked" onclick="toggleCheckin('${v.visitId}')"><i class="ti ti-check"></i>เข้าแล้ว</button>`
+      :`<button class="btn-checkin" onclick="toggleCheckin('${v.visitId}')"><i class="ti ti-clock"></i>ยังไม่เข้า</button>`;
     return`<tr>
       <td class="${cls}">${v.company}</td>
       <td class="${cls}">${fmtD(v.date)}</td>
       <td class="${cls}">${fmtD(v.notifiedAt)}</td>
       <td style="color:${noteColor};font-size:14px">${v.note||'-'}</td>
+      <td style="text-align:center">${checkedBtn}</td>
+      <td style="text-align:center"><button onclick="deleteVisit('${v.visitId}')" style="background:none;border:none;cursor:pointer;color:#c0392b;font-size:18px;padding:4px 8px;border-radius:6px" title="ลบ"><i class="ti ti-trash"></i></button></td>
     </tr>`;
   }).join('');
 }
 
-/* ── Boot ── */
+function deleteVisit(visitId){
+  if(!confirm('ลบรายการนี้ออกจากประวัติ?'))return;
+  visits=visits.filter(v=>v.visitId!==visitId);
+  try{localStorage.removeItem('checkin_'+visitId);}catch(e){}
+  initYearFilter();
+  renderHistory();
+  renderAlert();
+}
+
+function toggleCheckin(visitId){
+  const v=visits.find(x=>x.visitId===visitId);
+  if(!v)return;
+  v.checkedIn=!v.checkedIn;
+  try{
+    if(v.checkedIn)localStorage.setItem('checkin_'+visitId,'1');
+    else localStorage.removeItem('checkin_'+visitId);
+  }catch(e){}
+  renderHistory();
+  renderAlert();
+}
 initCompany();
 document.getElementById('visitDate').value=todayStr();
 syncAll(false);
