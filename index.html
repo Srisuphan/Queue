@@ -55,6 +55,7 @@ input:focus,select:focus,textarea:focus{border-color:#1a8fc0;box-shadow:0 0 0 3p
 .ab-tomorrow{background:#e0ecfb;color:#185fa5;border:1.5px solid #90b8e8}
 .ab-pending{background:#fdecea;color:#a32d2d;border:1.5px solid #f0b8b8}
 .ab-uncomp{background:#fff3e0;color:#854f0b;border:1.5px solid #f5c97a}
+.ab-truck{background:#E8F0FE;color:#1A56A0;border:1.5px solid #90b0e8}
 
 /* HISTORY TABLE */
 .vtable{width:100%;border-collapse:collapse;font-size:15px}
@@ -126,6 +127,13 @@ input:focus,select:focus,textarea:focus{border-color:#1a8fc0;box-shadow:0 0 0 3p
     </div>
     <div id="uncomp-list"></div>
   </div>
+
+  <div class="card">
+    <div class="sec-title" style="color:#1A56A0"><i class="ti ti-truck-delivery" style="color:#1A56A0"></i>สินค้ารอรถมารับ
+      <span style="font-size:13px;font-weight:400;color:#888">(เฉพาะบริษัทที่แจ้งเข้าวันนี้)</span>
+    </div>
+    <div id="truck-list"></div>
+  </div>
 </div>
 
 <!-- ══ PAGE: FORM ══ -->
@@ -180,7 +188,7 @@ input:focus,select:focus,textarea:focus{border-color:#1a8fc0;box-shadow:0 0 0 3p
 </div><!-- .app -->
 
 <script>
-const GAS='https://script.google.com/macros/s/AKfycbwUG5eEtouGB3dJZb0NmkyNxD02LbwZSMGSQB8HDzD7emd1PFVh37wgG7wmNfmMagVM/exec';
+const GAS='https://script.google.com/macros/s/AKfycbySSOcZb0edMfpM3xm2B1SPn7nzBhbSrW_GlA65hWgUGJupRa4gLkV0dyt3DopVo5F6/exec';
 const VISITS_H=['วันที่แจ้ง','บริษัท','วันที่จะเข้า','หมายเหตุ','visitId'];
 
 const COMPANIES=[{name:'กรุงเทพฯฟาร์มาซี'},{name:'กวงเตี่ยงดิสเปนซารี่'},{name:'ขาวละออเภสัช'},{name:'ควอลิเมด'},{name:'คอนติเนนเติล-ฟาร์ม'},{name:'คั่นกี่ (น้ำเต้าทอง)'},{name:'ง่วนเฮงจั่น'},{name:'จตุรพรโอสถ'},{name:'จรูญเภสัช'},{name:'จอมทอง'},{name:'จีนฮั่วเฮง'},{name:'ชาญกิจเทรดดิ้ง'},{name:'ชีโน แปซิฟิก'},{name:'ชุมชนเภสัชกรรม'},{name:'ชูมิตร'},{name:'ซินต้าเทรดดิ้ง'},{name:'ซิลลิค ฟาร์มา'},{name:'ซิสส์ เฮสท์แคร์'},{name:'ซีเครท เฮลธ์'},{name:'ซี่น อัน ตึ๊ง'},{name:'ดาด้า'},{name:'ดีซีเอช ออริก้า'},{name:'ดีเอ็น เซ็นเตอร์ (DNcenter)'},{name:'ตั้งเต็มจิตร์'},{name:'ถาวราเฮลท์'},{name:'ถ้วยทองโอสถ'},{name:'ทรูไลน์ เมด'},{name:'ที.ซี.ฟาร์มาซูติคอล'},{name:'ที.ที เซคชั่น'},{name:'ที.พี.ดรัก แลบบอราทอรี่ส์'},{name:'ที.แมน ฟาร์มา'},{name:'ที.โอ.เคมีคอลส์ (1979)'},{name:'ทีซี กรีนไพน์'},{name:'ทูบี มาร์เก็ตติ้ง'},{name:'ธงทองโอสถ'},{name:'ธนบุรี'},{name:'ธีระพานิช'},{name:'นครพัฒนา'},{name:'นพรัตน์'},{name:'นิวคอนเซพท์ โปรดัคท์'},{name:'นิวเจริญ ฟาร์มาซูติคอล'},{name:'นิวไลฟ์ ฟาร์มา'},{name:'นีโอก้า'},{name:'บอส ฟาร์มาแคร์ (ยาไทย)'},{name:'บัณโก'},{name:'บางกอกแล็ป แอนด์ คอสเมติค'},{name:'บี เมด ฟาร์มาซูติคอล'},{name:'บี.เอ็ม'},{name:'บี.เอ็ล.ฮั้ว'},{name:'บี.เอ็ล.เอช. เทรดดิ้ง'},{name:'บุคคโล'},{name:'บุญส่งโอสถ'},{name:'บูรพาโอสถ'},{name:'ประสงค์เภสัช'},{name:'ปัจจุบันโอสถ'},{name:'ปิยะพนธ์ (มาราธอน)'},{name:'ผงพิเศษตราร่มชูชีพ'},{name:'พยาบาล'},{name:'พรอส ฟาร์มา'},{name:'พรีเวนทีฟ'},{name:'พัฒนาการเภสัช'},{name:'พาร์ตาแลบ (2517)'},{name:'พิคโก้ฟาร์มา'},{name:'พี.ยูนีไทย'},{name:'พีดีแอล'},{name:'พีพีเอ็ม (PPM)'},{name:'พีเอ็มแอล (ฟาร์มาแลนด์)'},{name:'ฟาร์มาสแควร์'},{name:'ฟาร์ม่าไลน์'},{name:'ฟีฮาแลบ'},{name:'มัณฑนา มาร์เก็ตติ้ง'},{name:'มาซ่าแลป'},{name:'ยันฮี'},{name:'ยาตราพระราม'},{name:'ยูนีซัน'},{name:'ยูเนี่ยนเมดิคอล'},{name:'ยูเมด้า'},{name:'ลองเมด'},{name:'ลิงถือลูกท้อ'},{name:'ลิตเติ้ล ฮาร์ท'},{name:'ลี้้บ้วนซัว ดิสเปนซารี่(ห้างเก่า)'},{name:'วายไอเอ แมเนชเมนท์ (YIA-คุณเปรมา)'},{name:'วิจารณ์เภสัช'},{name:'วิทยาศรม สาขา 5'},{name:'วิทูรเภสัช'},{name:'วิริยะ เมดิคอล'},{name:'วิริยะพานิช'},{name:'วิเศษนิยม'},{name:'ศรีจันทร์โอสถ'},{name:'ส.สุพรรณ'},{name:'ส.เจริญ เภสัช'},{name:'สมศักดิ์เภสัช (โคเทียมเกวียน)'},{name:'สมุนไพรคงคา'},{name:'สมุนไพรตราหมอจุฬา'},{name:'สมุนไพรภูหลวง'},{name:'สยาม ฟาร์มาซูติคอล'},{name:'สยามไทธัส'},{name:'สหแพทย์เภสัช'},{name:'สัมมิท คอร์เปเรชั่น'},{name:'สามัคคีเภสัช'},{name:'หงส์ไทย'},{name:'หมอมี'},{name:'หมอยาไทย'},{name:'หมิ่นเพียว'},{name:'หาญไทย'},{name:'ห้าตะขาบ'},{name:'ห้าม้าโอสถ'},{name:'ห้าเจดีย์'},{name:'องค์การเภสัชกรรม'},{name:'อาร์เอ็กซ์ แมนูแฟคเจอริ่ง'},{name:'อุดมนิจ'},{name:'อุยเฮง'},{name:'อ้วยอันโอสถ'},{name:'ฮีโร่มัยซิน ฟาร์ม่า'},{name:'ฮุยแลนด์'},{name:'เกร็กคู'},{name:'เกร็ทเตอร์ฟาร์ม่า'},{name:'เกียรติทวี (เช็ง เช็ง อิ้ว)'},{name:'เค.ที.วี'},{name:'เจ เอส วิชั่น'},{name:'เจริญสุข'},{name:'เจ็ดดาว'},{name:'เซ็นทรัลโพลี่'},{name:'เซ่งหลีโอสถ'},{name:'เทพประทานพร'},{name:'เทวกรรมโอสถ'},{name:'เบอร์ลิน ฟาร์มาซูติคอล'},{name:'เบอร์แทรม'},{name:'เพรซิเดนท์ อินเตอร์ ฟาร์มา'},{name:'เพ็ญภาค'},{name:'เฟรนชิป'},{name:'เภสัชกรรมศรีประสิทธิ์'},{name:'เมดซินโนว่า'},{name:'เมดเมเกอร์'},{name:'เมดไลน์'},{name:'เยนเนอร์ราลดรั๊กเฮ้าส์'},{name:'เยาวราช'},{name:'เยเนอรัล ออสปิตัล โปรดักส์'},{name:'เลิศสิงห์เภสัชกรรม'},{name:'เวชพงศ์โอสถ'},{name:'เวชภัณฑ์ ป๊อก กาโน่'},{name:'เสือ 11 ตัว'},{name:'เสือมังกร'},{name:'เหลืองเวชภัณฑ์'},{name:'เอ.เอ็น.บี ลาบอราตอรี่'},{name:'เอกไพศาล'},{name:'เอช.ไอ.พี (HIP)'},{name:'เอชจีเค ฟาร์มาซูติคอล'},{name:'เอชเค เมดิซีน'},{name:'เอซีอี โกลบอล (ACE Global)'},{name:'เอฟ.ซี.พี (FCP)'},{name:'เอส.เอส.พี (SSP)'},{name:'เอาร์อาร์'},{name:'เอเชี่ยน ฟาร์มาซูติคอล'},{name:'เอเชี่ยน ยูเนี่ยน (ASIAN UNION)'},{name:'เอเซียโอสถ (ไดน่าฟู้ด)'},{name:'เอเอ็นพีเอส (ANPS)'},{name:'เอเอ็มเค เมดิคอล'},{name:'เอ็งจีนฮั่วเฮง'},{name:'เฮลท์ อิมแพค'},{name:'แก้วมังกรเภสัช'},{name:'แคนตั้น เมดิแคร์'},{name:'แคสป้า ฟาร์มาซูติคอล (ประเทศไทย)'},{name:'แปซิฟิค เฮลธ์แคร์ (ไทยแลนด์)'},{name:'แมคโครฟาร์'},{name:'แมส มาร์เก็ตติ้ง'},{name:'แสงชัยเภสัช'},{name:'แสงฟ้า'},{name:'แสงรัศมี (SRM pharma)'},{name:'แสงไทย'},{name:'แหลมทอง การแพทย์'},{name:'แอตว๊านซ์ (ซองซิป)'},{name:'แอล.บี.เอส แลบบอเรตอรี่'},{name:'แอโรแคร์ (อินแพค)'},{name:'โกลด์ครอส (กากบาททอง)'},{name:'โชคชัย'},{name:'โปลิฟาร์ม'},{name:'โป๊ยเซียน'},{name:'โมเดิร์น ฟาร์ม่า'},{name:'โรงงานเภสัชกรรมแอตแลนติค'},{name:'โรต้าลาบอเร็ทตอรี่ส์'},{name:'โรยัล ดรักส์'},{name:'โอสถยังตัง'},{name:'โอเร็กซ์ เทรดดิ้ง'},{name:'ใบโพธิ์'},{name:'ไทยนครพัฒนา - แผนก 1 - ทิฟฟี่'},{name:'ไทยนครพัฒนา - แผนก 2 - แอนตาซิล'},{name:'ไทยนครพัฒนา - แผนก 3 - เบนด้า'},{name:'ไทยนครพัฒนา - แผนก 4 - นีโอติก้า'},{name:'ไทยนครพัฒนา - แผนก 5 - พรีมโนบุ'},{name:'ไทยเวชการ'},{name:'ไทยแลนด์ ฟาร์มาซี (นาสิก)'},{name:'ไบร์วู้ดฟาร์มาซูติคอล'},{name:'ไบโอจินีเทค'},{name:'ไบโอฟาร์ม (Biopharm)'},{name:'DKLL - Exeltis'},{name:'DKLL - Ranbaxy'},{name:'DKLL - อังกฤษตรางู'},{name:'DKSH - Alinamin'},{name:'DKSH - Alkon'},{name:'DKSH - Bausch & lomb (Renu)'},{name:'DKSH - Bayer (CDR)'},{name:'DKSH - Bayer (Yasmin)'},{name:'DKSH - Convatec'},{name:'DKSH - Hirudoid'},{name:'DKSH - Johnson&Johnson (tylenol)'},{name:'DKSH - LEO (Fucidene)'},{name:'DKSH - LEO (เสือดาว)'},{name:'DKSH - Loreal'},{name:'DKSH - Nestle'},{name:'DKSH - Omron'},{name:'DKSH - Opella (ไบโซลวอน)'},{name:'DKSH - Roche (Accuchek)'},{name:'DKSH - Sanofi (Depakine)'},{name:'DKSH - SM (Fluimucil)'},{name:'DKSH - SMART (Cavilon)'},{name:'DKSH - Smecta'},{name:'DKSH - Smith&nephew'},{name:'DKSH - Stada (Kamistad)'},{name:'DKSH - Taisho (Counterpain)'},{name:'DKSH - TRB'},{name:'DKSH - Vicks'},{name:'DKSH - ตราเสือ'},{name:'DKSH - ศิริบัญชา'},{name:'DKSH - โอสถสภา'},{name:'DKSH -โอสถอินเตอร์'},{name:'ZPL - Abbott (Ensure)'},{name:'ZPL - Abbott (Serc)'},{name:'ZPL - GED (Decolgen)'},{name:'ZPL - GSK'},{name:'ZPL - Haleon'},{name:'ZPL - Inova (norgesic)'},{name:'ZPL - M1 (thai-otsuka)'},{name:'ZPL - M2 (นกแก้ว)'},{name:'ZPL - M3 (Regelle)'},{name:'ZPL - M4 (Zithromax)'},{name:'ZPL - Mega'},{name:'ZPL - Menarini (Dermatix)'},{name:'ZPL - Menarini (Kamillosan)'},{name:'ZPL - Organon (Marvelon)'},{name:'ZPL - Perskindol'},{name:'ZPL - Sandoz'},{name:'ZPL - Viatris (Pfizer)'},{name:'ZPL - แจ็กเจี่ย'}];
@@ -321,10 +329,14 @@ async function syncAll(manual=false){
     }
     if(Array.isArray(rR)&&rR.length>1){
       const recMap={};
+      console.log('=== returns row[0] sample ===', rR.slice(1,3).map(r=>({id:r[0],co:r[2],pm:r[22],ps:r[23]})));
       rR.slice(1).forEach(row=>{
         const retId=String(row[0]||'');if(!retId||!row[6])return;
         const isCan=String(row[21]||'').toLowerCase()==='cancelled';
-        if(!recMap[retId])recMap[retId]={id:retId,company:String(row[2]||''),cancelled:isCan,drugs:[]};
+        if(!recMap[retId])recMap[retId]={id:retId,company:String(row[2]||''),cancelled:isCan,pickupMethod:String(row[22]||''),pickupStatus:String(row[23]||''),drugs:[]};
+        // อัปเดต pickupMethod/pickupStatus จากแถวล่าสุด (กรณีมีหลายแถว)
+        if(row[22])recMap[retId].pickupMethod=String(row[22]);
+        if(row[23])recMap[retId].pickupStatus=String(row[23]);
         const compStatus=String(row[14]||'ยังไม่ชดเชย');
         const compConfirmed=String(row[20]||'')==='ยืนยันแล้ว';
         recMap[retId].drugs.push({name:String(row[6]||''),compStatus,compConfirmed});
@@ -377,9 +389,16 @@ function renderAlert(){
       </div>`).join('')
     : emptyBox('mood-happy','ไม่มีบริษัทที่จะเข้าวันนี้ที่มียารอรับคืน');
 
-  /* รายการรอชดเชย — เฉพาะบริษัทที่เข้าวันนี้ */
+  /* รายการรอชดเชย — บริษัทที่เข้าวันนี้ ที่:
+     1) รับสินค้าไปเอง (self) หรือ
+     2) รอรถมารับ แต่รถรับไปแล้ว (truck + done)
+     และยังมีรายการที่ยังไม่ชดเชย */
   const uncompMap={};
-  returns.filter(r=>!r.cancelled&&todayCos.has(r.company)).forEach(r=>{
+  returns.filter(r=>{
+    if(r.cancelled||!todayCos.has(r.company))return false;
+    if(r.pickupMethod==='truck'&&r.pickupStatus!=='done')return false; // รอรถอยู่ → ยังไม่ต้องชดเชย
+    return true;
+  }).forEach(r=>{
     r.drugs.forEach(d=>{
       if(!d.compConfirmed&&d.compStatus!=='ชดเชยทั้งหมด'){
         uncompMap[r.company]=(uncompMap[r.company]||0)+1;
@@ -393,6 +412,19 @@ function renderAlert(){
         <span style="font-size:13px;color:#854f0b;font-weight:500"><i class="ti ti-currency-baht" style="vertical-align:-2px"></i> มีรายการรอชดเชย ${cnt} รายการ</span>
       </div>`).join('')
     : emptyBox('circle-check','ไม่มีรายการรอชดเชยสำหรับบริษัทที่จะเข้าวันนี้');
+
+  /* สินค้ารอรถมารับ — บริษัทที่เข้าวันนี้ ที่เลือกรอรถ และรถยังไม่มารับ */
+  const truckMap={};
+  returns.filter(r=>!r.cancelled&&todayCos.has(r.company)&&r.pickupMethod==='truck'&&r.pickupStatus!=='done').forEach(r=>{
+    truckMap[r.company]=(truckMap[r.company]||0)+1;
+  });
+  const truckEntries=Object.entries(truckMap);
+  document.getElementById('truck-list').innerHTML=truckEntries.length
+    ? truckEntries.map(([co,cnt])=>`<div class="visit-card">
+        <span class="alert-badge ab-truck"><i class="ti ti-truck-delivery"></i>${co}</span>
+        <span style="font-size:13px;color:#1A56A0;font-weight:500"><i class="ti ti-package" style="vertical-align:-2px"></i> มีสินค้ารอรถมารับ ${cnt} ใบ</span>
+      </div>`).join('')
+    : emptyBox('circle-check','ไม่มีสินค้ารอรถมารับสำหรับบริษัทที่จะเข้าวันนี้');
 }
 
 /* ── Render History ── */
