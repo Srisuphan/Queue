@@ -383,20 +383,18 @@ function renderAlert(){
   const pendingCos=[...new Set(drugs.filter(d=>d.status==='pending').map(d=>d.company))];
   const pendingToday=pendingCos.filter(co=>todayCos.has(co));
   document.getElementById('pending-list').innerHTML=pendingToday.length
-    ? pendingToday.map(co=>`<div class="visit-card">
+    ? pendingToday.map(co=>`<div class="visit-card" style="cursor:pointer" onclick="openLink('return','${encodeURIComponent(co)}')">
         <span class="alert-badge ab-pending"><i class="ti ti-package-export"></i>${co}</span>
         <span style="font-size:13px;color:#a32d2d;font-weight:500">มียาหมดอายุรอรับคืน</span>
+        <span style="font-size:12px;color:#a32d2d;opacity:.6"><i class="ti ti-arrow-right"></i> ไปหน้ารับคืน</span>
       </div>`).join('')
     : emptyBox('mood-happy','ไม่มีบริษัทที่จะเข้าวันนี้ที่มียารอรับคืน');
 
-  /* รายการรอชดเชย — บริษัทที่เข้าวันนี้ ที่:
-     1) รับสินค้าไปเอง (self) หรือ
-     2) รอรถมารับ แต่รถรับไปแล้ว (truck + done)
-     และยังมีรายการที่ยังไม่ชดเชย */
+  /* รายการรอชดเชย */
   const uncompMap={};
   returns.filter(r=>{
     if(r.cancelled||!todayCos.has(r.company))return false;
-    if(r.pickupMethod==='truck'&&r.pickupStatus!=='done')return false; // รอรถอยู่ → ยังไม่ต้องชดเชย
+    if(r.pickupMethod==='truck'&&r.pickupStatus!=='done')return false;
     return true;
   }).forEach(r=>{
     r.drugs.forEach(d=>{
@@ -407,24 +405,34 @@ function renderAlert(){
   });
   const uncompEntries=Object.entries(uncompMap);
   document.getElementById('uncomp-list').innerHTML=uncompEntries.length
-    ? uncompEntries.map(([co,cnt])=>`<div class="visit-card">
+    ? uncompEntries.map(([co,cnt])=>`<div class="visit-card" style="cursor:pointer" onclick="openLink('history','${encodeURIComponent(co)}')">
         <span class="alert-badge ab-uncomp"><i class="ti ti-building-store"></i>${co}</span>
         <span style="font-size:13px;color:#854f0b;font-weight:500"><i class="ti ti-currency-baht" style="vertical-align:-2px"></i> มีรายการรอชดเชย ${cnt} รายการ</span>
+        <span style="font-size:12px;color:#854f0b;opacity:.6"><i class="ti ti-arrow-right"></i> ไปหน้าประวัติ</span>
       </div>`).join('')
     : emptyBox('circle-check','ไม่มีรายการรอชดเชยสำหรับบริษัทที่จะเข้าวันนี้');
 
-  /* สินค้ารอรถมารับ — บริษัทที่เข้าวันนี้ ที่เลือกรอรถ และรถยังไม่มารับ */
+  /* สินค้ารอรถมารับ */
   const truckMap={};
   returns.filter(r=>!r.cancelled&&todayCos.has(r.company)&&r.pickupMethod==='truck'&&r.pickupStatus!=='done').forEach(r=>{
     truckMap[r.company]=(truckMap[r.company]||0)+1;
   });
   const truckEntries=Object.entries(truckMap);
   document.getElementById('truck-list').innerHTML=truckEntries.length
-    ? truckEntries.map(([co,cnt])=>`<div class="visit-card">
+    ? truckEntries.map(([co,cnt])=>`<div class="visit-card" style="cursor:pointer" onclick="openLink('pickup','${encodeURIComponent(co)}')">
         <span class="alert-badge ab-truck"><i class="ti ti-truck-delivery"></i>${co}</span>
         <span style="font-size:13px;color:#1A56A0;font-weight:500"><i class="ti ti-package" style="vertical-align:-2px"></i> มีสินค้ารอรถมารับ ${cnt} ใบ</span>
+        <span style="font-size:12px;color:#1A56A0;opacity:.6"><i class="ti ti-arrow-right"></i> ไปหน้ารอรถมารับ</span>
       </div>`).join('')
     : emptyBox('circle-check','ไม่มีสินค้ารอรถมารับสำหรับบริษัทที่จะเข้าวันนี้');
+}
+
+/* ── Open index.html with deep link ── */
+function openLink(page, company) {
+  // ชื่อไฟล์ HTML หลัก — ถ้าอยู่คนละ folder ให้แก้ path ตรงนี้
+  const base = 'index.html';
+  const url  = base + '?page=' + page + '&company=' + company;
+  window.open(url, '_blank');
 }
 
 /* ── Render History ── */
